@@ -10,6 +10,9 @@ import {
   Dimensions
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { SHADOWS, SIZES } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
+import Header from '../components/Header';
 import InputField from '../components/InputField';
 import CustomPicker from '../components/CustomPicker';
 import { MATERIALS, RESERVE_FACTORS } from '../constants/materials';
@@ -18,6 +21,7 @@ import { saveCalculation } from '../utils/calculations';
 const { width } = Dimensions.get('window');
 
 const TileCalculatorScreen = ({ navigation }) => {
+  const { colors: COLORS } = useTheme();
   const [roomLength, setRoomLength] = useState('');
   const [roomWidth, setRoomWidth] = useState('');
   const [tileSize, setTileSize] = useState('30x30');
@@ -26,7 +30,15 @@ const TileCalculatorScreen = ({ navigation }) => {
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState({});
   
-  const tileSizeOptions = MATERIALS.tile.sizes.map(size => ({
+  const tileSizes = [
+    { id: '20x20', name: '20x20 см', area: 0.04, packSize: 25 },
+    { id: '30x30', name: '30x30 см', area: 0.09, packSize: 11 },
+    { id: '40x40', name: '40x40 см', area: 0.16, packSize: 6 },
+    { id: '60x60', name: '60x60 см', area: 0.36, packSize: 4 },
+    { id: '60x120', name: '60x120 см', area: 0.72, packSize: 2 },
+  ];
+  
+  const tileSizeOptions = tileSizes.map(size => ({
     value: size.id,
     label: size.name,
     description: `${size.packSize} шт/уп • ${(size.area * size.packSize).toFixed(2)} м²/уп`

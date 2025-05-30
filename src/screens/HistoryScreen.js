@@ -14,9 +14,11 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getCalculationHistory, clearHistory } from '../utils/calculations';
-import { COLORS, SIZES, SHADOWS } from '../constants/theme';
+import { SIZES, SHADOWS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 const HistoryScreen = () => {
+  const { colors: COLORS } = useTheme();
   const [history, setHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('all');
@@ -74,23 +76,11 @@ const HistoryScreen = () => {
         iconType: 'Ionicons',
         color: COLORS.tile 
       },
-      paint: { 
-        name: 'КРАСКА', 
-        icon: 'format-paint',
+      cement: { 
+        name: 'ЦЕМЕНТ', 
+        icon: 'package-variant',
         iconType: 'MaterialCommunityIcons',
-        color: COLORS.paint 
-      },
-      foundation: { 
-        name: 'ФУНДАМЕНТ', 
-        icon: 'home-foundation',
-        iconType: 'MaterialCommunityIcons',
-        color: COLORS.foundation 
-      },
-      mortar: { 
-        name: 'РАСТВОР', 
-        icon: 'beaker',
-        iconType: 'MaterialCommunityIcons',
-        color: COLORS.mortar 
+        color: COLORS.primary 
       }
     };
     return info[type] || { 
@@ -172,32 +162,33 @@ const HistoryScreen = () => {
       <Animated.View 
         style={[
           styles.historyItem,
+          { backgroundColor: COLORS.surface },
           {
             transform: [{ translateY }],
             opacity,
           }
         ]}
       >
-        <View style={styles.iconContainer}>
+        <View style={[styles.iconContainer, { backgroundColor: COLORS.background }]}>
           {renderIcon(calcInfo.icon, calcInfo.iconType, calcInfo.color)}
         </View>
         
         <View style={styles.itemContent}>
           <View style={styles.itemHeader}>
-            <Text style={styles.calculatorName}>{calcInfo.name}</Text>
-            <Text style={styles.date}>{formatDate(item.date)}</Text>
+            <Text style={[styles.calculatorName, { color: COLORS.text }]}>{calcInfo.name}</Text>
+            <Text style={[styles.date, { color: COLORS.textMuted }]}>{formatDate(item.date)}</Text>
           </View>
           
-          <View style={styles.itemDetails}>
+          <View style={[styles.itemDetails, { backgroundColor: COLORS.background }]}>
             {item.type === 'brick' && (
               <>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Площадь стены:</Text>
-                  <Text style={styles.detailValue}>{item.params.wallArea} м²</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Площадь стены:</Text>
+                  <Text style={[styles.detailValue, { color: COLORS.text }]}>{item.result.area} м²</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Количество:</Text>
-                  <Text style={styles.detailValueHighlight}>{item.result.quantity} шт</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Количество:</Text>
+                  <Text style={[styles.detailValueHighlight, { color: COLORS.primary }]}>{item.result.quantityWithReserve} шт</Text>
                 </View>
               </>
             )}
@@ -205,12 +196,12 @@ const HistoryScreen = () => {
             {item.type === 'concrete' && (
               <>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Объем бетона:</Text>
-                  <Text style={styles.detailValue}>{item.result.volume} м³</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Объем бетона:</Text>
+                  <Text style={[styles.detailValue, { color: COLORS.text }]}>{item.result.volume} м³</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Мешков цемента:</Text>
-                  <Text style={styles.detailValueHighlight}>{item.result.cementBags} шт</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Мешков цемента:</Text>
+                  <Text style={[styles.detailValueHighlight, { color: COLORS.primary }]}>{item.result.cementBags} шт</Text>
                 </View>
               </>
             )}
@@ -218,25 +209,25 @@ const HistoryScreen = () => {
             {item.type === 'tile' && (
               <>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Площадь укладки:</Text>
-                  <Text style={styles.detailValue}>{item.result.area} м²</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Площадь укладки:</Text>
+                  <Text style={[styles.detailValue, { color: COLORS.text }]}>{item.result.area} м²</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Заказать:</Text>
-                  <Text style={styles.detailValueHighlight}>{item.result.areaToOrder} м²</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Заказать:</Text>
+                  <Text style={[styles.detailValueHighlight, { color: COLORS.primary }]}>{item.result.areaToOrder} м²</Text>
                 </View>
               </>
             )}
             
-            {item.type === 'paint' && (
+            {(item.type === 'cement' || item.type === 'Цемент' || item.type === 'Бетон' || item.type === 'Раствор') && (
               <>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Площадь покраски:</Text>
-                  <Text style={styles.detailValue}>{item.result.area} м²</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Объем:</Text>
+                  <Text style={[styles.detailValue, { color: COLORS.text }]}>{item.data?.volume || item.result?.volume} м³</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Объем краски:</Text>
-                  <Text style={styles.detailValueHighlight}>{item.result.liters} л</Text>
+                  <Text style={[styles.detailLabel, { color: COLORS.textLight }]}>Цемент:</Text>
+                  <Text style={[styles.detailValueHighlight, { color: COLORS.primary }]}>{item.data?.cementBags || item.result?.cementBags} мешков</Text>
                 </View>
               </>
             )}
@@ -246,12 +237,12 @@ const HistoryScreen = () => {
           <View style={styles.statusBar}>
             <View style={styles.statusItem}>
               <Ionicons name="checkmark-circle" size={14} color={COLORS.success} />
-              <Text style={styles.statusText}>Сохранено</Text>
+              <Text style={[styles.statusText, { color: COLORS.textLight }]}>Сохранено</Text>
             </View>
             {item.result.price && (
               <View style={styles.statusItem}>
                 <Ionicons name="cash-outline" size={14} color={COLORS.primary} />
-                <Text style={styles.statusText}>~{item.result.price.toLocaleString()} ₽</Text>
+                <Text style={[styles.statusText, { color: COLORS.textLight }]}>~{item.result.price.toLocaleString()} ₽</Text>
               </View>
             )}
           </View>
@@ -262,22 +253,30 @@ const HistoryScreen = () => {
   
   const renderFilterButton = (type, label) => (
     <TouchableOpacity
-      style={[styles.filterButton, filter === type && styles.filterButtonActive]}
+      style={[
+        styles.filterButton, 
+        { backgroundColor: COLORS.background, borderColor: COLORS.border },
+        filter === type && [styles.filterButtonActive, { backgroundColor: COLORS.primary, borderColor: COLORS.primary }]
+      ]}
       onPress={() => setFilter(type)}
     >
-      <Text style={[styles.filterButtonText, filter === type && styles.filterButtonTextActive]}>
+      <Text style={[
+        styles.filterButtonText, 
+        { color: COLORS.textLight },
+        filter === type && [styles.filterButtonTextActive, { color: COLORS.textOnDark }]
+      ]}>
         {label}
       </Text>
     </TouchableOpacity>
   );
   
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]}>
       {/* Темная шапка в стиле СВ ГРУПП */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: COLORS.primaryDark }]}>
         <View>
-          <Text style={styles.title}>ИСТОРИЯ РАСЧЕТОВ</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: COLORS.textOnDark }]}>ИСТОРИЯ РАСЧЕТОВ</Text>
+          <Text style={[styles.subtitle, { color: COLORS.textOnDark }]}>
             {filteredHistory.length > 0 
               ? `${filteredHistory.length} ${filteredHistory.length === 1 ? 'расчет' : 'расчетов'}`
               : 'Нет расчетов'
@@ -287,7 +286,7 @@ const HistoryScreen = () => {
         {history.length > 0 && (
           <TouchableOpacity 
             onPress={handleClearHistory}
-            style={styles.clearButton}
+            style={[styles.clearButton, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}
             activeOpacity={0.7}
           >
             <Ionicons name="trash-outline" size={20} color={COLORS.danger} />
@@ -300,24 +299,26 @@ const HistoryScreen = () => {
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
-          style={styles.filterContainer}
+          style={[styles.filterContainer, { backgroundColor: COLORS.surface, borderBottomColor: COLORS.border }]}
           contentContainerStyle={styles.filterContent}
         >
           {renderFilterButton('all', 'ВСЕ')}
           {renderFilterButton('concrete', 'БЕТОН')}
           {renderFilterButton('brick', 'КИРПИЧ')}
           {renderFilterButton('tile', 'ПЛИТКА')}
-          {renderFilterButton('paint', 'КРАСКА')}
+          {renderFilterButton('cement', 'ЦЕМЕНТ')}
+          {renderFilterButton('Бетон', 'БЕТОН')}
+          {renderFilterButton('Раствор', 'РАСТВОР')}
         </ScrollView>
       )}
       
       {filteredHistory.length === 0 ? (
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons name="history" size={80} color={COLORS.border} />
-          <Text style={styles.emptyTitle}>
+          <Text style={[styles.emptyTitle, { color: COLORS.text }]}>
             {filter === 'all' ? 'История пуста' : 'Нет расчетов'}
           </Text>
-          <Text style={styles.emptyText}>
+          <Text style={[styles.emptyText, { color: COLORS.textLight }]}>
             {filter === 'all' 
               ? 'Ваши расчеты будут\nсохраняться здесь'
               : 'Нет сохраненных расчетов\nданного типа'
@@ -347,7 +348,6 @@ const HistoryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
@@ -356,17 +356,14 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 50 : 30,
     paddingHorizontal: 20,
     paddingBottom: 16,
-    backgroundColor: COLORS.primaryDark,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.textOnDark,
     letterSpacing: 1,
   },
   subtitle: {
     fontSize: 14,
-    color: COLORS.textOnDark,
     marginTop: 4,
     opacity: 0.8,
   },
@@ -374,15 +371,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: SIZES.radiusMedium,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   filterContainer: {
-    backgroundColor: COLORS.surface,
     maxHeight: 60,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
   filterContent: {
     paddingHorizontal: 16,
@@ -393,30 +387,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: COLORS.background,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
-  filterButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
+  filterButtonActive: {},
   filterButtonText: {
     fontSize: 12,
     fontWeight: '600',
-    color: COLORS.textLight,
     letterSpacing: 0.5,
   },
-  filterButtonTextActive: {
-    color: COLORS.textOnDark,
-  },
+  filterButtonTextActive: {},
   listContent: {
     padding: 16,
   },
   historyItem: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusMedium,
     padding: 16,
     marginBottom: 12,
@@ -426,7 +411,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: SIZES.radiusMedium,
-    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -440,16 +424,13 @@ const styles = StyleSheet.create({
   calculatorName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: COLORS.text,
     letterSpacing: 0.5,
   },
   date: {
     fontSize: 12,
-    color: COLORS.textMuted,
     marginTop: 2,
   },
   itemDetails: {
-    backgroundColor: COLORS.background,
     borderRadius: SIZES.radiusSmall,
     padding: 12,
   },
@@ -460,16 +441,13 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 12,
-    color: COLORS.textLight,
   },
   detailValue: {
     fontSize: 12,
-    color: COLORS.text,
     fontWeight: '500',
   },
   detailValueHighlight: {
     fontSize: 14,
-    color: COLORS.primary,
     fontWeight: 'bold',
   },
   statusBar: {
@@ -484,7 +462,6 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 11,
-    color: COLORS.textLight,
   },
   emptyContainer: {
     flex: 1,
@@ -495,13 +472,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: COLORS.text,
     marginTop: 16,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: COLORS.textLight,
     textAlign: 'center',
     lineHeight: 20,
   },

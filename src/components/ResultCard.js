@@ -1,28 +1,34 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS, SIZES, SHADOWS } from '../constants/theme';
+import { SIZES, SHADOWS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 const ResultCard = ({ result, onSave }) => {
+  const { colors: COLORS } = useTheme();
+  
   if (!result || Object.keys(result).length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={[styles.emptyContainer, { 
+        backgroundColor: COLORS.surface,
+        borderColor: COLORS.borderLight 
+      }]}>
         <MaterialCommunityIcons name="calculator-variant" size={60} color={COLORS.border} />
-        <Text style={styles.emptyText}>Нажмите "РАССЧИТАТЬ"</Text>
-        <Text style={styles.emptySubtext}>для получения результатов</Text>
+        <Text style={[styles.emptyText, { color: COLORS.textLight }]}>Нажмите "РАССЧИТАТЬ"</Text>
+        <Text style={[styles.emptySubtext, { color: COLORS.textLight }]}>для получения результатов</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: COLORS.surface, borderTopColor: COLORS.primary }]}>
+      <View style={[styles.header, { borderBottomColor: COLORS.borderLight }]}>
         <View style={styles.headerLeft}>
           <MaterialCommunityIcons name="check-circle" size={24} color={COLORS.success} />
-          <Text style={styles.headerTitle}>РАСЧЕТ ВЫПОЛНЕН</Text>
+          <Text style={[styles.headerTitle, { color: COLORS.text }]}>РАСЧЕТ ВЫПОЛНЕН</Text>
         </View>
         {onSave && (
-          <TouchableOpacity onPress={onSave} style={styles.saveButton}>
+          <TouchableOpacity onPress={onSave} style={[styles.saveButton, { backgroundColor: COLORS.background }]}>
             <Ionicons name="save-outline" size={18} color={COLORS.primary} />
           </TouchableOpacity>
         )}
@@ -78,7 +84,7 @@ const ResultCard = ({ result, onSave }) => {
               break;
             case 'cement':
               label = 'Цемент';
-              icon = <MaterialCommunityIcons name="cement" size={20} color={COLORS.primary} />;
+              icon = <MaterialCommunityIcons name="package-variant" size={20} color={COLORS.primary} />;
               displayValue = `${value} кг`;
               break;
             case 'cementBags':
@@ -111,14 +117,14 @@ const ResultCard = ({ result, onSave }) => {
           }
           
           return (
-            <View key={key} style={[styles.row, highlight && styles.rowHighlight]}>
+            <View key={key} style={[styles.row, { borderBottomColor: COLORS.background }, highlight && [styles.rowHighlight, { backgroundColor: COLORS.background }]]}>
               <View style={styles.rowLeft}>
                 {icon}
-                <Text style={[styles.label, highlight && styles.labelHighlight]}>
+                <Text style={[styles.label, { color: COLORS.textLight }, highlight && [styles.labelHighlight, { color: COLORS.text }]]}>
                   {label}
                 </Text>
               </View>
-              <Text style={[styles.value, highlight && styles.valueHighlight]}>
+              <Text style={[styles.value, { color: COLORS.text }, highlight && [styles.valueHighlight, { color: COLORS.primary }]]}>
                 {displayValue}
               </Text>
             </View>
@@ -126,14 +132,14 @@ const ResultCard = ({ result, onSave }) => {
         })}
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { backgroundColor: COLORS.background }]}>
         <View style={styles.footerItem}>
           <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
-          <Text style={styles.footerText}>Расчет по ГОСТ</Text>
+          <Text style={[styles.footerText, { color: COLORS.textLight }]}>Расчет по ГОСТ</Text>
         </View>
         <View style={styles.footerItem}>
           <Ionicons name="time" size={16} color={COLORS.primary} />
-          <Text style={styles.footerText}>{new Date().toLocaleTimeString()}</Text>
+          <Text style={[styles.footerText, { color: COLORS.textLight }]}>{new Date().toLocaleTimeString()}</Text>
         </View>
       </View>
     </View>
@@ -142,7 +148,6 @@ const ResultCard = ({ result, onSave }) => {
 
 const styles = StyleSheet.create({
   emptyContainer: {
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusLarge,
     padding: 40,
     alignItems: 'center',
@@ -150,28 +155,23 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 16,
     borderWidth: 2,
-    borderColor: COLORS.borderLight,
     borderStyle: 'dashed',
   },
   emptyText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.textLight,
     marginTop: 16,
   },
   emptySubtext: {
     fontSize: 14,
-    color: COLORS.textLight,
     marginTop: 4,
   },
   container: {
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusMedium,
     marginTop: 20,
     marginHorizontal: 16,
     ...SHADOWS.medium,
     borderTopWidth: 4,
-    borderTopColor: COLORS.primary,
   },
   header: {
     flexDirection: 'row',
@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -188,14 +187,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: COLORS.text,
     marginLeft: 8,
     letterSpacing: 0.5,
   },
   saveButton: {
     padding: 8,
     borderRadius: 6,
-    backgroundColor: COLORS.background,
   },
   content: {
     padding: 16,
@@ -206,10 +203,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.background,
   },
   rowHighlight: {
-    backgroundColor: COLORS.background,
     marginHorizontal: -16,
     paddingHorizontal: 16,
     borderRadius: 6,
@@ -221,28 +216,23 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: COLORS.textLight,
     marginLeft: 10,
   },
   labelHighlight: {
-    color: COLORS.text,
     fontWeight: '500',
   },
   value: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text,
   },
   valueHighlight: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.primary,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 12,
-    backgroundColor: COLORS.background,
     borderBottomLeftRadius: SIZES.radiusMedium,
     borderBottomRightRadius: SIZES.radiusMedium,
   },
@@ -252,7 +242,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: COLORS.textLight,
     marginLeft: 6,
   },
 });

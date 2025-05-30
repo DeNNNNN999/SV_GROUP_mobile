@@ -13,14 +13,15 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS, SIZES, SHADOWS } from '../constants/theme';
+import { SIZES, SHADOWS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 const SettingsScreen = () => {
+  const { colors: COLORS, isDarkMode, toggleTheme } = useTheme();
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
   const [autoSave, setAutoSave] = useState(true);
   const [units, setUnits] = useState('metric');
-  
+
   const handleClearData = () => {
     Alert.alert(
       'Очистить все данные',
@@ -42,11 +43,11 @@ const SettingsScreen = () => {
       ]
     );
   };
-  
+
   const handleContact = () => {
     Linking.openURL('mailto:support@stroycalc.ru?subject=Поддержка СтройКалькулятор');
   };
-  
+
   const handleRate = () => {
     if (Platform.OS === 'ios') {
       Linking.openURL('https://apps.apple.com/app/id123456789');
@@ -54,10 +55,10 @@ const SettingsScreen = () => {
       Linking.openURL('https://play.google.com/store/apps/details?id=com.stroycalc');
     }
   };
-  
+
   const SettingItem = ({ icon, iconType, title, subtitle, onPress, children }) => (
-    <TouchableOpacity 
-      style={styles.settingItem} 
+    <TouchableOpacity
+      style={styles.settingItem}
       onPress={onPress}
       activeOpacity={onPress ? 0.7 : 1}
     >
@@ -78,7 +79,7 @@ const SettingsScreen = () => {
       )}
     </TouchableOpacity>
   );
-  
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Темная шапка в стиле СВ ГРУПП */}
@@ -86,15 +87,15 @@ const SettingsScreen = () => {
         <Text style={styles.title}>НАСТРОЙКИ</Text>
         <Text style={styles.subtitle}>Версия 1.0.0</Text>
       </View>
-      
-      <ScrollView 
+
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Основные настройки */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ОСНОВНЫЕ</Text>
-          
+
           <SettingItem
             icon="notifications"
             iconType="Ionicons"
@@ -108,22 +109,21 @@ const SettingsScreen = () => {
               thumbColor={notifications ? COLORS.textOnDark : COLORS.background}
             />
           </SettingItem>
-          
+
           <SettingItem
             icon="moon"
             iconType="Ionicons"
             title="Темная тема"
-            subtitle="В разработке"
+            subtitle="Изменить внешний вид приложения"
           >
             <Switch
-              value={darkMode}
-              onValueChange={setDarkMode}
+              value={isDarkMode}
+              onValueChange={toggleTheme}
               trackColor={{ false: COLORS.border, true: COLORS.primary }}
-              thumbColor={darkMode ? COLORS.textOnDark : COLORS.background}
-              disabled
+              thumbColor={isDarkMode ? COLORS.textOnDark : COLORS.background}
             />
           </SettingItem>
-          
+
           <SettingItem
             icon="save"
             iconType="Ionicons"
@@ -138,11 +138,11 @@ const SettingsScreen = () => {
             />
           </SettingItem>
         </View>
-        
+
         {/* Единицы измерения */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ЕДИНИЦЫ ИЗМЕРЕНИЯ</Text>
-          
+
           <View style={styles.unitsSelector}>
             <TouchableOpacity
               style={[styles.unitButton, units === 'metric' && styles.unitButtonActive]}
@@ -155,7 +155,7 @@ const SettingsScreen = () => {
                 м, м², м³, кг
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.unitButton, units === 'imperial' && styles.unitButtonActive]}
               onPress={() => setUnits('imperial')}
@@ -173,11 +173,11 @@ const SettingsScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {/* Данные */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ДАННЫЕ</Text>
-          
+
           <SettingItem
             icon="download-outline"
             iconType="Ionicons"
@@ -185,7 +185,7 @@ const SettingsScreen = () => {
             subtitle="Сохранить историю расчетов"
             onPress={() => Alert.alert('В разработке', 'Эта функция будет доступна в следующей версии')}
           />
-          
+
           <SettingItem
             icon="trash-outline"
             iconType="Ionicons"
@@ -194,11 +194,11 @@ const SettingsScreen = () => {
             onPress={handleClearData}
           />
         </View>
-        
+
         {/* О приложении */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>О ПРИЛОЖЕНИИ</Text>
-          
+
           <SettingItem
             icon="information-circle"
             iconType="Ionicons"
@@ -206,7 +206,7 @@ const SettingsScreen = () => {
             subtitle="Профессиональные строительные расчеты"
             onPress={() => {}}
           />
-          
+
           <SettingItem
             icon="document-text"
             iconType="Ionicons"
@@ -214,7 +214,7 @@ const SettingsScreen = () => {
             subtitle="Правовая информация"
             onPress={() => Linking.openURL('https://stroycalc.ru/terms')}
           />
-          
+
           <SettingItem
             icon="shield-checkmark"
             iconType="Ionicons"
@@ -223,11 +223,11 @@ const SettingsScreen = () => {
             onPress={() => Linking.openURL('https://stroycalc.ru/privacy')}
           />
         </View>
-        
+
         {/* Поддержка */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ПОДДЕРЖКА</Text>
-          
+
           <SettingItem
             icon="mail"
             iconType="Ionicons"
@@ -235,7 +235,7 @@ const SettingsScreen = () => {
             subtitle="support@stroycalc.ru"
             onPress={handleContact}
           />
-          
+
           <SettingItem
             icon="star"
             iconType="Ionicons"
@@ -243,7 +243,7 @@ const SettingsScreen = () => {
             subtitle="Поделитесь вашим мнением"
             onPress={handleRate}
           />
-          
+
           <SettingItem
             icon="share-social"
             iconType="Ionicons"
@@ -252,7 +252,7 @@ const SettingsScreen = () => {
             onPress={() => {}}
           />
         </View>
-        
+
         {/* Нижний блок в стиле СВ ГРУПП */}
         <View style={styles.footer}>
           <View style={styles.footerCard}>
@@ -265,7 +265,7 @@ const SettingsScreen = () => {
                 <Text style={styles.footerSubtitle}>Профессиональные расчеты</Text>
               </View>
             </View>
-            
+
             <View style={styles.badges}>
               <View style={styles.badge}>
                 <Ionicons name="checkmark-circle" size={16} color={COLORS.primary} />
@@ -276,11 +276,11 @@ const SettingsScreen = () => {
                 <Text style={styles.badgeText}>Проверено экспертами</Text>
               </View>
             </View>
-            
+
             <Text style={styles.copyright}>© 2024 СтройКалькулятор</Text>
           </View>
         </View>
-        
+
         <View style={styles.bottomPadding} />
       </ScrollView>
     </SafeAreaView>

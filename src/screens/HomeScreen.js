@@ -37,13 +37,13 @@ const HomeScreen = ({ navigation }) => {
       route: 'brickCalculator'
     },
     {
-      id: 'foundation',
-      title: 'ФУНДАМЕНТ',
-      subtitle: 'Ленточный',
-      description: 'Полный расчет',
-      icon: 'home-foundation',
+      id: 'cement',
+      title: 'ЦЕМЕНТ',
+      subtitle: 'Все марки',
+      description: 'Расчет мешков',
+      icon: 'package-variant',
       iconType: 'MaterialCommunityIcons',
-      route: 'foundationCalculator'
+      route: 'cementCalculator'
     },
     {
       id: 'tile',
@@ -54,24 +54,6 @@ const HomeScreen = ({ navigation }) => {
       iconType: 'Ionicons',
       route: 'tileCalculator'
     },
-    {
-      id: 'paint',
-      title: 'КРАСКА',
-      subtitle: 'Все типы',
-      description: 'Расход на м²',
-      icon: 'format-paint',
-      iconType: 'MaterialCommunityIcons',
-      route: 'paintCalculator'
-    },
-    {
-      id: 'mortar',
-      title: 'РАСТВОР',
-      subtitle: 'Цементный',
-      description: 'Состав смеси',
-      icon: 'beaker',
-      iconType: 'MaterialCommunityIcons',
-      route: 'mortarCalculator'
-    }
   ];
 
   const renderIcon = (iconName, iconType) => {

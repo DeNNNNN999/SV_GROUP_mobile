@@ -4,14 +4,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS, SIZES } from '../constants/theme';
+import { SIZES } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Импорт экранов
 import HomeScreen from '../screens/HomeScreen';
 import BrickCalculatorScreen from '../screens/BrickCalculatorScreen';
 import ConcreteCalculatorScreen from '../screens/ConcreteCalculatorScreen';
 import TileCalculatorScreen from '../screens/TileCalculatorScreen';
-import PaintCalculatorScreen from '../screens/PaintCalculatorScreen';
+import CementCalculatorScreen from '../screens/CementCalculatorScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -19,7 +20,9 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Placeholder для недостающих экранов
-const PlaceholderScreen = ({ route }) => (
+const PlaceholderScreen = ({ route }) => {
+  const { colors: COLORS } = useTheme();
+  return (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
     <MaterialCommunityIcons name="hammer-wrench" size={60} color={COLORS.primary} />
     <Text style={{ fontSize: 18, fontWeight: 'bold', color: COLORS.text, marginTop: 16 }}>
@@ -29,10 +32,12 @@ const PlaceholderScreen = ({ route }) => (
       {route.name}
     </Text>
   </View>
-);
+  );
+};
 
 // Стек для калькуляторов
 const CalculatorsStack = () => {
+  const { colors: COLORS } = useTheme();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -44,17 +49,16 @@ const CalculatorsStack = () => {
       <Stack.Screen name="brickCalculator" component={BrickCalculatorScreen} />
       <Stack.Screen name="concreteCalculator" component={ConcreteCalculatorScreen} />
       <Stack.Screen name="tileCalculator" component={TileCalculatorScreen} />
-      <Stack.Screen name="paintCalculator" component={PaintCalculatorScreen} />
+      <Stack.Screen name="cementCalculator" component={CementCalculatorScreen} />
       <Stack.Screen name="foundationCalculator" component={PlaceholderScreen} />
       <Stack.Screen name="mortarCalculator" component={PlaceholderScreen} />
-      <Stack.Screen name="wallpaperCalculator" component={PlaceholderScreen} />
-      <Stack.Screen name="laminateCalculator" component={PlaceholderScreen} />
     </Stack.Navigator>
   );
 };
 
 // Основная навигация с табами
 const AppNavigator = () => {
+  const { colors: COLORS } = useTheme();
   return (
     <NavigationContainer>
       <Tab.Navigator

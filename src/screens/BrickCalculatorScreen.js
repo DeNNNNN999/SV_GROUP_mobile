@@ -11,6 +11,9 @@ import {
   Image
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
+import { SHADOWS, SIZES } from '../constants/theme';
+import Header from '../components/Header';
 import InputField from '../components/InputField';
 import CustomPicker from '../components/CustomPicker';
 import { MATERIALS, RESERVE_FACTORS } from '../constants/materials';
@@ -19,6 +22,7 @@ import { calculateBricks, saveCalculation } from '../utils/calculations';
 const { width } = Dimensions.get('window');
 
 const BrickCalculatorScreen = ({ navigation }) => {
+  const { colors: COLORS } = useTheme();
   const [wallArea, setWallArea] = useState('');
   const [wallLength, setWallLength] = useState('');
   const [wallHeight, setWallHeight] = useState('');
@@ -146,51 +150,56 @@ const BrickCalculatorScreen = ({ navigation }) => {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="#2C3E50" />
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>РАСЧЕТ КИРПИЧА</Text>
-          <Text style={styles.subtitle}>По ГОСТ 530-2012</Text>
-        </View>
-        <View style={styles.headerIcon}>
-          <FontAwesome5 name="bricks" size={26} color="#E74C3C" />
-        </View>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]}>
+      <Header title="РАСЧЕТ КИРПИЧА" onBack={() => navigation.goBack()} />
       
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Выбор способа расчета */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>СПОСОБ РАСЧЕТА</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>СПОСОБ РАСЧЕТА</Text>
           <View style={styles.modeSelector}>
             <TouchableOpacity
-              style={[styles.modeButton, calculationMode === 'area' && styles.modeButtonActive]}
+              style={[
+                styles.modeButton,
+                { borderColor: COLORS.border },
+                calculationMode === 'area' && [styles.modeButtonActive, { backgroundColor: COLORS.danger, borderColor: COLORS.danger }]
+              ]}
               onPress={() => setCalculationMode('area')}
             >
               <MaterialCommunityIcons 
                 name="square" 
                 size={20} 
-                color={calculationMode === 'area' ? '#FFFFFF' : '#7F8C8D'} 
+                color={calculationMode === 'area' ? COLORS.textOnDark : COLORS.textLight} 
               />
-              <Text style={[styles.modeButtonText, calculationMode === 'area' && styles.modeButtonTextActive]}>
+              <Text style={[
+                styles.modeButtonText,
+                { color: COLORS.textLight },
+                calculationMode === 'area' && [styles.modeButtonTextActive, { color: COLORS.textOnDark }]
+              ]}>
                 По площади
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modeButton, calculationMode === 'dimensions' && styles.modeButtonActive]}
+              style={[
+                styles.modeButton,
+                { borderColor: COLORS.border },
+                calculationMode === 'dimensions' && [styles.modeButtonActive, { backgroundColor: COLORS.danger, borderColor: COLORS.danger }]
+              ]}
               onPress={() => setCalculationMode('dimensions')}
             >
               <MaterialCommunityIcons 
                 name="ruler" 
                 size={20} 
-                color={calculationMode === 'dimensions' ? '#FFFFFF' : '#7F8C8D'} 
+                color={calculationMode === 'dimensions' ? COLORS.textOnDark : COLORS.textLight} 
               />
-              <Text style={[styles.modeButtonText, calculationMode === 'dimensions' && styles.modeButtonTextActive]}>
+              <Text style={[
+                styles.modeButtonText,
+                { color: COLORS.textLight },
+                calculationMode === 'dimensions' && [styles.modeButtonTextActive, { color: COLORS.textOnDark }]
+              ]}>
                 По размерам
               </Text>
             </TouchableOpacity>
@@ -198,8 +207,8 @@ const BrickCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Параметры стены */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ПАРАМЕТРЫ СТЕНЫ</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>ПАРАМЕТРЫ СТЕНЫ</Text>
           {calculationMode === 'area' ? (
             <InputField
               label="Площадь стены"
@@ -235,29 +244,46 @@ const BrickCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Тип кирпича с визуализацией */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ТИП КИРПИЧА</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>ТИП КИРПИЧА</Text>
           <View style={styles.brickTypes}>
             {MATERIALS.brick.types.map((type) => (
               <TouchableOpacity
                 key={type.id}
-                style={[styles.brickCard, brickType === type.id && styles.brickCardActive]}
+                style={[
+                  styles.brickCard,
+                  { borderColor: COLORS.border },
+                  brickType === type.id && [styles.brickCardActive, { borderColor: COLORS.danger, backgroundColor: COLORS.background }]
+                ]}
                 onPress={() => setBrickType(type.id)}
               >
                 <View style={styles.brickVisual}>
                   <View style={[
                     styles.brickIcon,
+                    { backgroundColor: COLORS.brick, borderColor: COLORS.brick },
                     { height: type.id === 'single' ? 20 : type.id === 'oneAndHalf' ? 26 : 32 }
                   ]} />
                 </View>
-                <Text style={[styles.brickName, brickType === type.id && styles.brickNameActive]}>
+                <Text style={[
+                  styles.brickName,
+                  { color: COLORS.textLight },
+                  brickType === type.id && [styles.brickNameActive, { color: COLORS.danger }]
+                ]}>
                   {type.name}
                 </Text>
-                <Text style={[styles.brickSize, brickType === type.id && styles.brickSizeActive]}>
+                <Text style={[
+                  styles.brickSize,
+                  { color: COLORS.textMuted },
+                  brickType === type.id && [styles.brickSizeActive, { color: COLORS.danger }]
+                ]}>
                   {type.size}
                 </Text>
-                <View style={styles.brickInfo}>
-                  <Text style={[styles.brickInfoText, brickType === type.id && styles.brickInfoTextActive]}>
+                <View style={[styles.brickInfo, { borderTopColor: COLORS.borderLight }]}>
+                  <Text style={[
+                    styles.brickInfoText,
+                    { color: COLORS.textLight },
+                    brickType === type.id && [styles.brickInfoTextActive, { color: COLORS.danger }]
+                  ]}>
                     {type.perM2} шт/м²
                   </Text>
                 </View>
@@ -267,8 +293,8 @@ const BrickCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Толщина кладки */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ТОЛЩИНА КЛАДКИ</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>ТОЛЩИНА КЛАДКИ</Text>
           <CustomPicker
             value={wallThickness}
             options={wallThicknessOptions}
@@ -278,21 +304,23 @@ const BrickCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Запас */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ЗАПАС МАТЕРИАЛА</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>ЗАПАС МАТЕРИАЛА</Text>
           <View style={styles.reserveButtons}>
             {RESERVE_FACTORS.map((factor) => (
               <TouchableOpacity
                 key={factor.value}
                 style={[
                   styles.reserveButton,
-                  reserveFactor === factor.value && styles.reserveButtonActive
+                  { borderColor: COLORS.border, backgroundColor: COLORS.background },
+                  reserveFactor === factor.value && [styles.reserveButtonActive, { backgroundColor: COLORS.danger, borderColor: COLORS.danger }]
                 ]}
                 onPress={() => setReserveFactor(factor.value)}
               >
                 <Text style={[
                   styles.reserveButtonText,
-                  reserveFactor === factor.value && styles.reserveButtonTextActive
+                  { color: COLORS.textLight },
+                  reserveFactor === factor.value && [styles.reserveButtonTextActive, { color: COLORS.textOnDark }]
                 ]}>
                   {factor.label}
                 </Text>
@@ -304,122 +332,122 @@ const BrickCalculatorScreen = ({ navigation }) => {
         {/* Кнопки действий */}
         <View style={styles.buttons}>
           <TouchableOpacity 
-            style={[styles.button, styles.calculateButton]}
+            style={[styles.button, styles.calculateButton, { backgroundColor: COLORS.danger }]}
             onPress={handleCalculate}
           >
-            <MaterialCommunityIcons name="calculator" size={20} color="white" />
-            <Text style={styles.buttonText}>РАССЧИТАТЬ</Text>
+            <MaterialCommunityIcons name="calculator" size={20} color={COLORS.textOnDark} />
+            <Text style={[styles.buttonText, { color: COLORS.textOnDark }]}>РАССЧИТАТЬ</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
-            style={[styles.button, styles.resetButton]}
+            style={[styles.button, styles.resetButton, { backgroundColor: COLORS.border }]}
             onPress={handleReset}
           >
-            <Ionicons name="refresh" size={20} color="#7F8C8D" />
-            <Text style={[styles.buttonText, styles.resetButtonText]}>СБРОС</Text>
+            <Ionicons name="refresh" size={20} color={COLORS.textLight} />
+            <Text style={[styles.buttonText, styles.resetButtonText, { color: COLORS.textLight }]}>СБРОС</Text>
           </TouchableOpacity>
         </View>
         
         {/* Результаты */}
         {showResults && (
           <View style={styles.results}>
-            <Text style={styles.resultsTitle}>РЕЗУЛЬТАТЫ РАСЧЕТА</Text>
+            <Text style={[styles.resultsTitle, { color: COLORS.text }]}>РЕЗУЛЬТАТЫ РАСЧЕТА</Text>
             
             {/* Основная карточка результата */}
-            <View style={styles.mainResultCard}>
+            <View style={[styles.mainResultCard, { backgroundColor: COLORS.surface, borderColor: COLORS.danger }]}>
               <View style={styles.mainResultHeader}>
-                <FontAwesome5 name="bricks" size={32} color="#E74C3C" />
+                <FontAwesome5 name="bricks" size={32} color={COLORS.danger} />
                 <View style={styles.mainResultInfo}>
-                  <Text style={styles.mainResultLabel}>Необходимо кирпича</Text>
-                  <Text style={styles.mainResultValue}>{result.quantityWithReserve}</Text>
-                  <Text style={styles.mainResultUnit}>штук</Text>
+                  <Text style={[styles.mainResultLabel, { color: COLORS.textLight }]}>Необходимо кирпича</Text>
+                  <Text style={[styles.mainResultValue, { color: COLORS.danger }]}>{result.quantityWithReserve}</Text>
+                  <Text style={[styles.mainResultUnit, { color: COLORS.text }]}>штук</Text>
                 </View>
               </View>
               
-              <View style={styles.mainResultDetails}>
+              <View style={[styles.mainResultDetails, { borderBottomColor: COLORS.background }]}>
                 <View style={styles.mainResultRow}>
-                  <Text style={styles.mainResultDetailLabel}>Тип кирпича:</Text>
-                  <Text style={styles.mainResultDetailValue}>{result.brickType}</Text>
+                  <Text style={[styles.mainResultDetailLabel, { color: COLORS.textLight }]}>Тип кирпича:</Text>
+                  <Text style={[styles.mainResultDetailValue, { color: COLORS.text }]}>{result.brickType}</Text>
                 </View>
                 <View style={styles.mainResultRow}>
-                  <Text style={styles.mainResultDetailLabel}>Толщина кладки:</Text>
-                  <Text style={styles.mainResultDetailValue}>{result.wallThickness}</Text>
+                  <Text style={[styles.mainResultDetailLabel, { color: COLORS.textLight }]}>Толщина кладки:</Text>
+                  <Text style={[styles.mainResultDetailValue, { color: COLORS.text }]}>{result.wallThickness}</Text>
                 </View>
                 <View style={styles.mainResultRow}>
-                  <Text style={styles.mainResultDetailLabel}>Площадь стены:</Text>
-                  <Text style={styles.mainResultDetailValue}>{result.area} м²</Text>
+                  <Text style={[styles.mainResultDetailLabel, { color: COLORS.textLight }]}>Площадь стены:</Text>
+                  <Text style={[styles.mainResultDetailValue, { color: COLORS.text }]}>{result.area} м²</Text>
                 </View>
               </View>
             </View>
             
             {/* Детальная информация */}
             <View style={styles.detailsGrid}>
-              <View style={styles.detailCard}>
-                <MaterialCommunityIcons name="package-variant" size={24} color="#3498DB" />
-                <Text style={styles.detailCardValue}>{result.pallets}</Text>
-                <Text style={styles.detailCardLabel}>Поддонов</Text>
+              <View style={[styles.detailCard, { backgroundColor: COLORS.surface }]}>
+                <MaterialCommunityIcons name="package-variant" size={24} color={COLORS.primary} />
+                <Text style={[styles.detailCardValue, { color: COLORS.text }]}>{result.pallets}</Text>
+                <Text style={[styles.detailCardLabel, { color: COLORS.textLight }]}>Поддонов</Text>
               </View>
               
-              <View style={styles.detailCard}>
+              <View style={[styles.detailCard, { backgroundColor: COLORS.surface }]}>
                 <MaterialCommunityIcons name="weight" size={24} color="#9B59B6" />
-                <Text style={styles.detailCardValue}>{result.weight}</Text>
-                <Text style={styles.detailCardLabel}>Тонн</Text>
+                <Text style={[styles.detailCardValue, { color: COLORS.text }]}>{result.weight}</Text>
+                <Text style={[styles.detailCardLabel, { color: COLORS.textLight }]}>Тонн</Text>
               </View>
             </View>
             
             {/* Раствор */}
-            <View style={styles.mortarCard}>
+            <View style={[styles.mortarCard, { backgroundColor: COLORS.surface }]}>
               <View style={styles.mortarHeader}>
                 <MaterialCommunityIcons name="beaker" size={24} color="#16A085" />
-                <Text style={styles.mortarTitle}>КЛАДОЧНЫЙ РАСТВОР</Text>
+                <Text style={[styles.mortarTitle, { color: COLORS.text }]}>КЛАДОЧНЫЙ РАСТВОР</Text>
               </View>
               
               <View style={styles.mortarGrid}>
                 <View style={styles.mortarItem}>
-                  <Text style={styles.mortarItemValue}>{result.mortar}</Text>
-                  <Text style={styles.mortarItemLabel}>м³ раствора</Text>
+                  <Text style={[styles.mortarItemValue, { color: "#16A085" }]}>{result.mortar}</Text>
+                  <Text style={[styles.mortarItemLabel, { color: COLORS.textLight }]}>м³ раствора</Text>
                 </View>
                 <View style={styles.mortarItem}>
-                  <Text style={styles.mortarItemValue}>{result.cementBags}</Text>
-                  <Text style={styles.mortarItemLabel}>мешков цемента</Text>
+                  <Text style={[styles.mortarItemValue, { color: "#16A085" }]}>{result.cementBags}</Text>
+                  <Text style={[styles.mortarItemLabel, { color: COLORS.textLight }]}>мешков цемента</Text>
                 </View>
                 <View style={styles.mortarItem}>
-                  <Text style={styles.mortarItemValue}>{result.sand}</Text>
-                  <Text style={styles.mortarItemLabel}>тонн песка</Text>
+                  <Text style={[styles.mortarItemValue, { color: "#16A085" }]}>{result.sand}</Text>
+                  <Text style={[styles.mortarItemLabel, { color: COLORS.textLight }]}>тонн песка</Text>
                 </View>
               </View>
             </View>
             
             {/* Стоимость */}
-            <View style={styles.priceCard}>
+            <View style={[styles.priceCard, { backgroundColor: COLORS.surface, borderColor: COLORS.success }]}>
               <View style={styles.priceHeader}>
-                <Ionicons name="cash-outline" size={24} color="#27AE60" />
-                <Text style={styles.priceLabel}>Примерная стоимость</Text>
+                <Ionicons name="cash-outline" size={24} color={COLORS.success} />
+                <Text style={[styles.priceLabel, { color: COLORS.success }]}>Примерная стоимость</Text>
               </View>
-              <Text style={styles.priceValue}>{result.price.toLocaleString()} ₽</Text>
-              <Text style={styles.priceNote}>*цены ориентировочные</Text>
+              <Text style={[styles.priceValue, { color: COLORS.success }]}>{result.price.toLocaleString()} ₽</Text>
+              <Text style={[styles.priceNote, { color: COLORS.textLight }]}>*цены ориентировочные</Text>
             </View>
             
             {/* Кнопка сохранения */}
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Ionicons name="save-outline" size={20} color="white" />
-              <Text style={styles.saveButtonText}>СОХРАНИТЬ РАСЧЕТ</Text>
+            <TouchableOpacity style={[styles.saveButton, { backgroundColor: COLORS.success }]} onPress={handleSave}>
+              <Ionicons name="save-outline" size={20} color={COLORS.textOnDark} />
+              <Text style={[styles.saveButtonText, { color: COLORS.textOnDark }]}>СОХРАНИТЬ РАСЧЕТ</Text>
             </TouchableOpacity>
           </View>
         )}
         
         {/* Информационный блок */}
-        <View style={styles.infoBlock}>
+        <View style={[styles.infoBlock, { backgroundColor: COLORS.surface, borderColor: COLORS.border }]}>
           <View style={styles.infoHeader}>
-            <Ionicons name="information-circle" size={20} color="#E74C3C" />
-            <Text style={styles.infoTitle}>СПРАВОЧНАЯ ИНФОРМАЦИЯ</Text>
+            <Ionicons name="information-circle" size={20} color={COLORS.danger} />
+            <Text style={[styles.infoTitle, { color: COLORS.danger }]}>СПРАВОЧНАЯ ИНФОРМАЦИЯ</Text>
           </View>
           <View style={styles.infoContent}>
-            <Text style={styles.infoItem}>• Расчет по ГОСТ 530-2012</Text>
-            <Text style={styles.infoItem}>• Учтен бой и брак кирпича 5%</Text>
-            <Text style={styles.infoItem}>• Толщина швов: горизонтальный 12мм, вертикальный 10мм</Text>
-            <Text style={styles.infoItem}>• Раствор рассчитан для марки М100</Text>
-            <Text style={styles.infoItem}>• 1 поддон ≈ 300-400 кирпичей</Text>
+            <Text style={[styles.infoItem, { color: COLORS.textLight }]}>• Расчет по ГОСТ 530-2012</Text>
+            <Text style={[styles.infoItem, { color: COLORS.textLight }]}>• Учтен бой и брак кирпича 5%</Text>
+            <Text style={[styles.infoItem, { color: COLORS.textLight }]}>• Толщина швов: горизонтальный 12мм, вертикальный 10мм</Text>
+            <Text style={[styles.infoItem, { color: COLORS.textLight }]}>• Раствор рассчитан для марки М100</Text>
+            <Text style={[styles.infoItem, { color: COLORS.textLight }]}>• 1 поддон ≈ 300-400 кирпичей</Text>
           </View>
         </View>
         
@@ -432,54 +460,17 @@ const BrickCalculatorScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 12,
-    color: '#7F8C8D',
-    marginTop: 2,
-  },
-  headerIcon: {
-    marginLeft: 12,
   },
   content: {
     flex: 1,
   },
   section: {
-    backgroundColor: '#FFFFFF',
     marginTop: 12,
     padding: 16,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2C3E50',
     letterSpacing: 1,
     marginBottom: 16,
   },
@@ -495,21 +486,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#E0E0E0',
     gap: 8,
   },
-  modeButtonActive: {
-    backgroundColor: '#E74C3C',
-    borderColor: '#E74C3C',
-  },
+  modeButtonActive: {},
   modeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#7F8C8D',
   },
-  modeButtonTextActive: {
-    color: '#FFFFFF',
-  },
+  modeButtonTextActive: {},
   inputsRow: {
     flexDirection: 'row',
     gap: 12,
@@ -526,13 +510,9 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#E0E0E0',
     alignItems: 'center',
   },
-  brickCardActive: {
-    borderColor: '#E74C3C',
-    backgroundColor: '#FFF5F5',
-  },
+  brickCardActive: {},
   brickVisual: {
     height: 40,
     justifyContent: 'center',
@@ -540,43 +520,31 @@ const styles = StyleSheet.create({
   },
   brickIcon: {
     width: 50,
-    backgroundColor: '#CD5C5C',
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#A52A2A',
   },
   brickName: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#7F8C8D',
     textAlign: 'center',
   },
-  brickNameActive: {
-    color: '#E74C3C',
-  },
+  brickNameActive: {},
   brickSize: {
     fontSize: 10,
-    color: '#95A5A6',
     marginTop: 2,
     textAlign: 'center',
   },
-  brickSizeActive: {
-    color: '#E74C3C',
-  },
+  brickSizeActive: {},
   brickInfo: {
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
   },
   brickInfoText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#7F8C8D',
   },
-  brickInfoTextActive: {
-    color: '#E74C3C',
-  },
+  brickInfoTextActive: {},
   reserveButtons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -587,21 +555,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#FAFAFA',
   },
-  reserveButtonActive: {
-    backgroundColor: '#E74C3C',
-    borderColor: '#E74C3C',
-  },
+  reserveButtonActive: {},
   reserveButtonText: {
     fontSize: 14,
-    color: '#7F8C8D',
     fontWeight: '500',
   },
-  reserveButtonTextActive: {
-    color: '#FFFFFF',
-  },
+  reserveButtonTextActive: {},
   buttons: {
     flexDirection: 'row',
     padding: 16,
@@ -617,45 +577,34 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   calculateButton: {
-    backgroundColor: '#E74C3C',
     elevation: 4,
-    shadowColor: '#E74C3C',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
-  resetButton: {
-    backgroundColor: '#E0E0E0',
-  },
+  resetButton: {},
   buttonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'white',
     letterSpacing: 0.5,
   },
-  resetButtonText: {
-    color: '#7F8C8D',
-  },
+  resetButtonText: {},
   results: {
     padding: 16,
   },
   resultsTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2C3E50',
     letterSpacing: 1,
     marginBottom: 16,
     textAlign: 'center',
   },
   mainResultCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     borderWidth: 2,
-    borderColor: '#E74C3C',
     elevation: 4,
-    shadowColor: '#E74C3C',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -666,7 +615,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#FFE0E0',
   },
   mainResultInfo: {
     flex: 1,
@@ -674,17 +622,14 @@ const styles = StyleSheet.create({
   },
   mainResultLabel: {
     fontSize: 14,
-    color: '#7F8C8D',
     marginBottom: 4,
   },
   mainResultValue: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#E74C3C',
   },
   mainResultUnit: {
     fontSize: 16,
-    color: '#2C3E50',
     fontWeight: '600',
   },
   mainResultDetails: {
@@ -696,12 +641,10 @@ const styles = StyleSheet.create({
   },
   mainResultDetailLabel: {
     fontSize: 14,
-    color: '#7F8C8D',
   },
   mainResultDetailValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2C3E50',
   },
   detailsGrid: {
     flexDirection: 'row',
@@ -710,12 +653,10 @@ const styles = StyleSheet.create({
   },
   detailCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F0F0F0',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -725,21 +666,17 @@ const styles = StyleSheet.create({
   detailCardValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2C3E50',
     marginTop: 8,
   },
   detailCardLabel: {
     fontSize: 12,
-    color: '#7F8C8D',
     marginTop: 4,
   },
   mortarCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -754,7 +691,6 @@ const styles = StyleSheet.create({
   mortarTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2C3E50',
     marginLeft: 8,
     letterSpacing: 0.5,
   },
@@ -768,21 +704,17 @@ const styles = StyleSheet.create({
   mortarItemValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#16A085',
   },
   mortarItemLabel: {
     fontSize: 11,
-    color: '#7F8C8D',
     marginTop: 4,
     textAlign: 'center',
   },
   priceCard: {
-    backgroundColor: '#F0FFF4',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#B4E7CE',
     alignItems: 'center',
   },
   priceHeader: {
@@ -793,29 +725,24 @@ const styles = StyleSheet.create({
   priceLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#27AE60',
     marginLeft: 8,
   },
   priceValue: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#27AE60',
   },
   priceNote: {
     fontSize: 11,
-    color: '#7F8C8D',
     marginTop: 4,
   },
   saveButton: {
     flexDirection: 'row',
-    backgroundColor: '#27AE60',
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     elevation: 2,
-    shadowColor: '#27AE60',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -823,17 +750,14 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'white',
     letterSpacing: 0.5,
   },
   infoBlock: {
-    backgroundColor: '#FFF5F0',
     margin: 16,
     marginTop: 0,
     borderRadius: 8,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#FFDBC9',
   },
   infoHeader: {
     flexDirection: 'row',
@@ -843,7 +767,6 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#E74C3C',
     marginLeft: 8,
     letterSpacing: 0.5,
   },
@@ -852,7 +775,6 @@ const styles = StyleSheet.create({
   },
   infoItem: {
     fontSize: 13,
-    color: '#7F8C8D',
     lineHeight: 18,
   },
   bottomPadding: {

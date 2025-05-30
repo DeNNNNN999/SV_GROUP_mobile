@@ -11,11 +11,13 @@ import {
   Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SIZES, SHADOWS } from '../constants/theme';
+import { SIZES, SHADOWS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
 const CustomPicker = ({ label, value, options, onValueChange, placeholder = 'Выберите значение' }) => {
+  const { colors: COLORS } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   
@@ -57,19 +59,23 @@ const CustomPicker = ({ label, value, options, onValueChange, placeholder = 'В�
   
   return (
     <View style={styles.container}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: COLORS.text }]}>{label}</Text> : null}
       <TouchableOpacity 
-        style={styles.pickerButton}
+        style={[styles.pickerButton, { 
+          backgroundColor: COLORS.surface,
+          borderColor: COLORS.border 
+        }]}
         onPress={showModal}
         activeOpacity={0.7}
       >
         <Text style={[
           styles.pickerText, 
-          !selectedOption && styles.placeholder
+          { color: COLORS.text },
+          !selectedOption && [styles.placeholder, { color: COLORS.textMuted }]
         ]}>
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <View style={styles.arrowContainer}>
+        <View style={[styles.arrowContainer, { backgroundColor: COLORS.background }]}>
           <Ionicons name="chevron-down" size={20} color={COLORS.textLight} />
         </View>
       </TouchableOpacity>
@@ -88,15 +94,16 @@ const CustomPicker = ({ label, value, options, onValueChange, placeholder = 'В�
           <Animated.View 
             style={[
               styles.modalContent,
+              { backgroundColor: COLORS.surface },
               {
                 transform: [{ scale: modalScale }],
                 opacity: modalOpacity,
               }
             ]}
           >
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{label || 'Выберите опцию'}</Text>
-              <TouchableOpacity onPress={hideModal} style={styles.closeButton}>
+            <View style={[styles.modalHeader, { borderBottomColor: COLORS.borderLight }]}>
+              <Text style={[styles.modalTitle, { color: COLORS.text }]}>{label || 'Выберите опцию'}</Text>
+              <TouchableOpacity onPress={hideModal} style={[styles.closeButton, { backgroundColor: COLORS.background }]}>
                 <Ionicons name="close" size={24} color={COLORS.textLight} />
               </TouchableOpacity>
             </View>
@@ -105,12 +112,13 @@ const CustomPicker = ({ label, value, options, onValueChange, placeholder = 'В�
               data={options}
               keyExtractor={item => String(item.value)}
               showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: COLORS.borderLight }]} />}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[
                     styles.option,
-                    item.value === value && styles.selectedOption
+                    { backgroundColor: COLORS.surface },
+                    item.value === value && [styles.selectedOption, { backgroundColor: COLORS.background }]
                   ]}
                   onPress={() => handleSelect(item.value)}
                   activeOpacity={0.7}
@@ -118,12 +126,13 @@ const CustomPicker = ({ label, value, options, onValueChange, placeholder = 'В�
                   <View style={styles.optionContent}>
                     <Text style={[
                       styles.optionText,
-                      item.value === value && styles.selectedOptionText
+                      { color: COLORS.text },
+                      item.value === value && [styles.selectedOptionText, { color: COLORS.primary }]
                     ]}>
                       {item.label}
                     </Text>
                     {item.description && (
-                      <Text style={styles.optionDescription}>{item.description}</Text>
+                      <Text style={[styles.optionDescription, { color: COLORS.textLight }]}>{item.description}</Text>
                     )}
                   </View>
                   {item.value === value && (
@@ -148,7 +157,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.text,
     marginBottom: 8,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
@@ -157,29 +165,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusMedium,
     borderWidth: 1,
-    borderColor: COLORS.border,
     paddingHorizontal: 16,
     paddingVertical: 14,
     minHeight: 52,
   },
   pickerText: {
     fontSize: 16,
-    color: COLORS.text,
     fontWeight: '500',
     flex: 1,
   },
   placeholder: {
-    color: COLORS.textMuted,
     fontWeight: '400',
   },
   arrowContainer: {
     width: 32,
     height: 32,
     borderRadius: SIZES.radiusSmall,
-    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
@@ -192,7 +195,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusLarge,
     width: width - 40,
     maxHeight: '70%',
@@ -205,12 +207,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
   },
   modalTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.text,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
@@ -218,13 +218,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   separator: {
     height: 1,
-    backgroundColor: COLORS.borderLight,
   },
   option: {
     flexDirection: 'row',
@@ -232,27 +230,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: COLORS.surface,
   },
-  selectedOption: {
-    backgroundColor: COLORS.background,
-  },
+  selectedOption: {},
   optionContent: {
     flex: 1,
     marginRight: 10,
   },
   optionText: {
     fontSize: 16,
-    color: COLORS.text,
     fontWeight: '500',
   },
   selectedOptionText: {
-    color: COLORS.primary,
     fontWeight: '600',
   },
   optionDescription: {
     fontSize: 12,
-    color: COLORS.textLight,
     marginTop: 4,
   },
   checkmarkContainer: {

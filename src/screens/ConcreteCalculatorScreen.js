@@ -15,11 +15,14 @@ import InputField from '../components/InputField';
 import CustomPicker from '../components/CustomPicker';
 import { MATERIALS, RESERVE_FACTORS } from '../constants/materials';
 import { calculateConcrete, saveCalculation } from '../utils/calculations';
-import { COLORS, SHADOWS, SIZES, FONTS } from '../constants/theme';
+import { SHADOWS, SIZES, FONTS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
+import Header from '../components/Header';
 
 const { width } = Dimensions.get('window');
 
 const ConcreteCalculatorScreen = ({ navigation }) => {
+  const { colors: COLORS } = useTheme();
   const [length, setLength] = useState('');
   const [width, setWidth] = useState('');
   const [height, setHeight] = useState('');
@@ -119,46 +122,39 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Темная шапка СВ ГРУПП */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color={COLORS.textOnDark} />
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>РАСЧЕТ БЕТОНА</Text>
-          <Text style={styles.subtitle}>Соответствие бетона заявленной марке</Text>
-        </View>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]}>
+      <Header title="РАСЧЕТ БЕТОНА" onBack={() => navigation.goBack()} />
       
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Информационный блок как у СВ ГРУПП */}
-        <View style={styles.infoBanner}>
+        <View style={[styles.infoBanner, { backgroundColor: COLORS.surface }]}>
           <MaterialCommunityIcons name="information" size={24} color={COLORS.primary} />
-          <Text style={styles.infoBannerText}>
+          <Text style={[styles.infoBannerText, { color: COLORS.text }]}>
             Точное количество материалов и цемента рассчитывается согласно ГОСТ 26633-2015
           </Text>
         </View>
         
         {/* Тип конструкции */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ТИП КОНСТРУКЦИИ</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>ТИП КОНСТРУКЦИИ</Text>
           <View style={styles.foundationTypes}>
             {foundationTypes.map((type) => (
               <TouchableOpacity
                 key={type.value}
                 style={[
                   styles.foundationTypeCard,
-                  foundationType === type.value && styles.foundationTypeCardActive
+                  { borderColor: COLORS.border },
+                  foundationType === type.value && [styles.foundationTypeCardActive, { borderColor: COLORS.primary, backgroundColor: COLORS.background }]
                 ]}
                 onPress={() => setFoundationType(type.value)}
               >
                 <Text style={[
                   styles.foundationTypeText,
-                  foundationType === type.value && styles.foundationTypeTextActive
+                  { color: COLORS.textLight },
+                  foundationType === type.value && [styles.foundationTypeTextActive, { color: COLORS.primary }]
                 ]}>
                   {type.label}
                 </Text>
@@ -168,8 +164,8 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Параметры */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ПАРАМЕТРЫ КОНСТРУКЦИИ</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>ПАРАМЕТРЫ КОНСТРУКЦИИ</Text>
           <View style={styles.inputsRow}>
             <View style={styles.inputWrapper}>
               <InputField
@@ -201,27 +197,30 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Марка бетона */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>МАРКА БЕТОНА</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>МАРКА БЕТОНА</Text>
           <View style={styles.gradeCards}>
             {gradeOptions.map((option) => (
               <TouchableOpacity
                 key={option.value}
                 style={[
                   styles.gradeCard,
-                  grade === option.value && styles.gradeCardActive
+                  { borderColor: COLORS.border },
+                  grade === option.value && [styles.gradeCardActive, { borderColor: COLORS.primary, backgroundColor: COLORS.background }]
                 ]}
                 onPress={() => setGrade(option.value)}
               >
                 <Text style={[
                   styles.gradeCardTitle,
-                  grade === option.value && styles.gradeCardTitleActive
+                  { color: COLORS.textLight },
+                  grade === option.value && [styles.gradeCardTitleActive, { color: COLORS.primary }]
                 ]}>
                   {option.label}
                 </Text>
                 <Text style={[
                   styles.gradeCardDescription,
-                  grade === option.value && styles.gradeCardDescriptionActive
+                  { color: COLORS.textMuted },
+                  grade === option.value && [styles.gradeCardDescriptionActive, { color: COLORS.primary }]
                 ]}>
                   {option.description}
                 </Text>
@@ -231,8 +230,8 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
         </View>
         
         {/* Запас */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>КОЭФФИЦИЕНТ ЗАПАСА</Text>
+        <View style={[styles.section, { backgroundColor: COLORS.surface }]}>
+          <Text style={[styles.sectionTitle, { color: COLORS.text }]}>КОЭФФИЦИЕНТ ЗАПАСА</Text>
           <CustomPicker
             value={reserveFactor}
             options={RESERVE_FACTORS}
@@ -244,96 +243,96 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
         {/* Кнопки */}
         <View style={styles.buttons}>
           <TouchableOpacity 
-            style={styles.calculateButton}
+            style={[styles.calculateButton, { backgroundColor: COLORS.primary }]}
             onPress={handleCalculate}
           >
-            <Text style={styles.calculateButtonText}>РАССЧИТАТЬ</Text>
+            <Text style={[styles.calculateButtonText, { color: COLORS.textOnDark }]}>РАССЧИТАТЬ</Text>
           </TouchableOpacity>
         </View>
         
         {/* Результаты */}
         {showResults && (
           <View style={styles.results}>
-            <Text style={styles.resultsTitle}>РЕЗУЛЬТАТЫ РАСЧЕТА</Text>
+            <Text style={[styles.resultsTitle, { color: COLORS.text }]}>РЕЗУЛЬТАТЫ РАСЧЕТА</Text>
             
             {/* Карточки результатов в стиле СВ ГРУПП */}
             <View style={styles.resultCards}>
-              <View style={styles.resultCard}>
-                <View style={styles.resultCardIcon}>
+              <View style={[styles.resultCard, { backgroundColor: COLORS.surface }]}>
+                <View style={[styles.resultCardIcon, { backgroundColor: COLORS.background }]}>
                   <MaterialCommunityIcons name="cube" size={32} color={COLORS.primary} />
                 </View>
-                <Text style={styles.resultCardTitle}>Объем бетона</Text>
-                <Text style={styles.resultCardValue}>{result.volumeWithReserve} м³</Text>
-                <Text style={styles.resultCardSubtext}>С учетом запаса</Text>
+                <Text style={[styles.resultCardTitle, { color: COLORS.textLight }]}>Объем бетона</Text>
+                <Text style={[styles.resultCardValue, { color: COLORS.text }]}>{result.volumeWithReserve} м³</Text>
+                <Text style={[styles.resultCardSubtext, { color: COLORS.textMuted }]}>С учетом запаса</Text>
               </View>
               
-              <View style={styles.resultCard}>
-                <View style={styles.resultCardIcon}>
+              <View style={[styles.resultCard, { backgroundColor: COLORS.surface }]}>
+                <View style={[styles.resultCardIcon, { backgroundColor: COLORS.background }]}>
                   <MaterialCommunityIcons name="truck-delivery" size={32} color={COLORS.primary} />
                 </View>
-                <Text style={styles.resultCardTitle}>Миксеров</Text>
-                <Text style={styles.resultCardValue}>{result.mixers} шт</Text>
-                <Text style={styles.resultCardSubtext}>По 7 м³</Text>
+                <Text style={[styles.resultCardTitle, { color: COLORS.textLight }]}>Миксеров</Text>
+                <Text style={[styles.resultCardValue, { color: COLORS.text }]}>{result.mixers} шт</Text>
+                <Text style={[styles.resultCardSubtext, { color: COLORS.textMuted }]}>По 7 м³</Text>
               </View>
               
-              <View style={styles.resultCard}>
-                <View style={styles.resultCardIcon}>
+              <View style={[styles.resultCard, { backgroundColor: COLORS.surface }]}>
+                <View style={[styles.resultCardIcon, { backgroundColor: COLORS.background }]}>
                   <Ionicons name="cash-outline" size={32} color={COLORS.primary} />
                 </View>
-                <Text style={styles.resultCardTitle}>Стоимость</Text>
-                <Text style={styles.resultCardValue}>{result.price.toLocaleString()} ₽</Text>
-                <Text style={styles.resultCardSubtext}>Ориентировочно</Text>
+                <Text style={[styles.resultCardTitle, { color: COLORS.textLight }]}>Стоимость</Text>
+                <Text style={[styles.resultCardValue, { color: COLORS.text }]}>{result.price.toLocaleString()} ₽</Text>
+                <Text style={[styles.resultCardSubtext, { color: COLORS.textMuted }]}>Ориентировочно</Text>
               </View>
             </View>
             
             {/* Состав бетона */}
             <View style={styles.compositionSection}>
-              <Text style={styles.compositionTitle}>СОСТАВ БЕТОНА</Text>
+              <Text style={[styles.compositionTitle, { color: COLORS.text }]}>СОСТАВ БЕТОНА</Text>
               
-              <View style={styles.compositionCard}>
+              <View style={[styles.compositionCard, { backgroundColor: COLORS.surface }]}>
                 <View style={styles.compositionItem}>
-                  <MaterialCommunityIcons name="cement" size={24} color={COLORS.primary} />
+                  <MaterialCommunityIcons name="package-variant" size={24} color={COLORS.primary} />
                   <View style={styles.compositionInfo}>
-                    <Text style={styles.compositionLabel}>Цемент М500</Text>
-                    <Text style={styles.compositionValue}>{result.cement} кг ({result.cementBags} мешков)</Text>
+                    <Text style={[styles.compositionLabel, { color: COLORS.text }]}>Цемент М500</Text>
+                    <Text style={[styles.compositionValue, { color: COLORS.textLight }]}>{result.cement} кг ({result.cementBags} мешков)</Text>
                   </View>
                 </View>
                 
-                <View style={styles.compositionDivider} />
+                <View style={[styles.compositionDivider, { backgroundColor: COLORS.borderLight }]} />
                 
                 <View style={styles.compositionItem}>
                   <MaterialCommunityIcons name="grain" size={24} color={COLORS.warning} />
                   <View style={styles.compositionInfo}>
-                    <Text style={styles.compositionLabel}>Песок</Text>
-                    <Text style={styles.compositionValue}>{result.sand} кг</Text>
+                    <Text style={[styles.compositionLabel, { color: COLORS.text }]}>Песок</Text>
+                    <Text style={[styles.compositionValue, { color: COLORS.textLight }]}>{result.sand} кг</Text>
                   </View>
                 </View>
                 
-                <View style={styles.compositionDivider} />
+                <View style={[styles.compositionDivider, { backgroundColor: COLORS.borderLight }]} />
                 
                 <View style={styles.compositionItem}>
                   <MaterialCommunityIcons name="circle-multiple" size={24} color={COLORS.textLight} />
                   <View style={styles.compositionInfo}>
-                    <Text style={styles.compositionLabel}>Щебень</Text>
-                    <Text style={styles.compositionValue}>{result.crushed} кг</Text>
+                    <Text style={[styles.compositionLabel, { color: COLORS.text }]}>Щебень</Text>
+                    <Text style={[styles.compositionValue, { color: COLORS.textLight }]}>{result.crushed} кг</Text>
                   </View>
                 </View>
                 
-                <View style={styles.compositionDivider} />
+                <View style={[styles.compositionDivider, { backgroundColor: COLORS.borderLight }]} />
                 
                 <View style={styles.compositionItem}>
                   <MaterialCommunityIcons name="water" size={24} color={COLORS.tile} />
                   <View style={styles.compositionInfo}>
-                    <Text style={styles.compositionLabel}>Вода</Text>
-                    <Text style={styles.compositionValue}>{result.water} л</Text>
+                    <Text style={[styles.compositionLabel, { color: COLORS.text }]}>Вода</Text>
+                    <Text style={[styles.compositionValue, { color: COLORS.textLight }]}>{result.water} л</Text>
                   </View>
                 </View>
               </View>
             </View>
             
             {/* Кнопка сохранения */}
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveButtonText}>СОХРАНИТЬ РАСЧЕТ</Text>
+            <TouchableOpacity style={[styles.saveButton, { backgroundColor: COLORS.success }]} onPress={handleSave}>
+              <Text style={[styles.saveButtonText, { color: COLORS.textOnDark }]}>СОХРАНИТЬ РАСЧЕТ</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -342,11 +341,11 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
         <View style={styles.bottomInfo}>
           <View style={styles.bottomInfoItem}>
             <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />
-            <Text style={styles.bottomInfoText}>Расчет по ГОСТ 26633-2015</Text>
+            <Text style={[styles.bottomInfoText, { color: COLORS.textLight }]}>Расчет по ГОСТ 26633-2015</Text>
           </View>
           <View style={styles.bottomInfoItem}>
             <Ionicons name="shield-checkmark" size={20} color={COLORS.primary} />
-            <Text style={styles.bottomInfoText}>Проверено экспертами</Text>
+            <Text style={[styles.bottomInfoText, { color: COLORS.textLight }]}>Проверено экспертами</Text>
           </View>
         </View>
         
@@ -359,39 +358,12 @@ const ConcreteCalculatorScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: COLORS.primaryDark,
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.textOnDark,
-    letterSpacing: 1,
-  },
-  subtitle: {
-    fontSize: 12,
-    color: COLORS.textOnDark,
-    marginTop: 2,
-    opacity: 0.8,
   },
   content: {
     flex: 1,
   },
   infoBanner: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface,
     margin: 16,
     padding: 16,
     borderRadius: SIZES.radiusMedium,
@@ -402,11 +374,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
     fontSize: 13,
-    color: COLORS.text,
     lineHeight: 18,
   },
   section: {
-    backgroundColor: COLORS.surface,
     marginHorizontal: 16,
     marginBottom: 12,
     padding: 16,
@@ -416,7 +386,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: COLORS.text,
     letterSpacing: 1,
     marginBottom: 16,
   },
@@ -427,21 +396,14 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: SIZES.radiusMedium,
     borderWidth: 2,
-    borderColor: COLORS.border,
     marginBottom: 8,
   },
-  foundationTypeCardActive: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.background,
-  },
+  foundationTypeCardActive: {},
   foundationTypeText: {
     fontSize: 14,
-    color: COLORS.textLight,
     fontWeight: '500',
   },
-  foundationTypeTextActive: {
-    color: COLORS.primary,
-  },
+  foundationTypeTextActive: {},
   inputsRow: {
     flexDirection: 'row',
     gap: 12,
@@ -456,35 +418,24 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: SIZES.radiusMedium,
     borderWidth: 2,
-    borderColor: COLORS.border,
     marginBottom: 8,
   },
-  gradeCardActive: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.background,
-  },
+  gradeCardActive: {},
   gradeCardTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: COLORS.textLight,
   },
-  gradeCardTitleActive: {
-    color: COLORS.primary,
-  },
+  gradeCardTitleActive: {},
   gradeCardDescription: {
     fontSize: 12,
-    color: COLORS.textMuted,
     marginTop: 2,
   },
-  gradeCardDescriptionActive: {
-    color: COLORS.primary,
-  },
+  gradeCardDescriptionActive: {},
   buttons: {
     paddingHorizontal: 16,
     marginTop: 8,
   },
   calculateButton: {
-    backgroundColor: COLORS.primary,
     padding: 16,
     borderRadius: SIZES.radiusMedium,
     alignItems: 'center',
@@ -493,7 +444,6 @@ const styles = StyleSheet.create({
   calculateButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.textOnDark,
     letterSpacing: 1,
   },
   results: {
@@ -502,7 +452,6 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: COLORS.text,
     letterSpacing: 1,
     marginBottom: 20,
     textAlign: 'center',
@@ -515,7 +464,6 @@ const styles = StyleSheet.create({
   },
   resultCard: {
     flex: 1,
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusMedium,
     padding: 16,
     alignItems: 'center',
@@ -524,7 +472,6 @@ const styles = StyleSheet.create({
   resultCardIcon: {
     width: 60,
     height: 60,
-    backgroundColor: COLORS.background,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
@@ -532,18 +479,15 @@ const styles = StyleSheet.create({
   },
   resultCardTitle: {
     fontSize: 12,
-    color: COLORS.textLight,
     marginBottom: 4,
   },
   resultCardValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: COLORS.text,
     marginBottom: 2,
   },
   resultCardSubtext: {
     fontSize: 11,
-    color: COLORS.textMuted,
   },
   compositionSection: {
     paddingHorizontal: 16,
@@ -552,12 +496,10 @@ const styles = StyleSheet.create({
   compositionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.text,
     letterSpacing: 1,
     marginBottom: 16,
   },
   compositionCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: SIZES.radiusMedium,
     padding: 16,
     ...SHADOWS.small,
@@ -573,21 +515,17 @@ const styles = StyleSheet.create({
   },
   compositionLabel: {
     fontSize: 14,
-    color: COLORS.text,
     fontWeight: '500',
   },
   compositionValue: {
     fontSize: 12,
-    color: COLORS.textLight,
     marginTop: 2,
   },
   compositionDivider: {
     height: 1,
-    backgroundColor: COLORS.borderLight,
     marginVertical: 4,
   },
   saveButton: {
-    backgroundColor: COLORS.success,
     marginHorizontal: 16,
     padding: 16,
     borderRadius: SIZES.radiusMedium,
@@ -597,7 +535,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.textOnDark,
     letterSpacing: 1,
   },
   bottomInfo: {
@@ -612,7 +549,6 @@ const styles = StyleSheet.create({
   },
   bottomInfoText: {
     fontSize: 12,
-    color: COLORS.textLight,
     marginLeft: 8,
   },
   bottomPadding: {

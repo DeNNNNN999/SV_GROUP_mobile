@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Animated, Platform } from 'react-native';
-import { COLORS, SIZES } from '../constants/theme';
+import { SIZES } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 const InputField = ({ 
   label, 
@@ -12,6 +13,7 @@ const InputField = ({
   style,
   error 
 }) => {
+  const { colors: COLORS } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const animatedValue = new Animated.Value(0);
 
@@ -47,8 +49,8 @@ const InputField = ({
     <View style={[styles.container, style]}>
       {label ? (
         <View style={styles.labelContainer}>
-          <Text style={styles.label}>{label}</Text>
-          {error && <Text style={styles.errorText}>{error}</Text>}
+          <Text style={[styles.label, { color: COLORS.text }]}>{label}</Text>
+          {error && <Text style={[styles.errorText, { color: COLORS.danger }]}>{error}</Text>}
         </View>
       ) : null}
       <Animated.View style={[
@@ -107,13 +109,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.text,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
   errorText: {
     fontSize: 12,
-    color: COLORS.danger,
     fontWeight: '500',
   },
   inputContainer: {
